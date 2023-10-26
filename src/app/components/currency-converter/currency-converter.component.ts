@@ -50,24 +50,33 @@ export class CurrencyConverterComponent implements OnInit {
   // get converted currency - verify input, call api, set result
   convertCurrency() {
     if(this.verifyCurrencyInput()) {
-      this.currencyConverterService.getExchangeAmount(this.currencyInput)
-      .subscribe({
-        next: (exchangeInfo) => {
-          console.log(exchangeInfo);
 
-          this.currencyInput.seriesNames = "FX" + this.currencyInput.fromCurrency + this.currencyInput.toCurrency;
-          
-          if(exchangeInfo.observations.length > 0) {
-            this.currencyOutput.exchangeRate = exchangeInfo.observations[0][this.currencyInput.seriesNames].v;
-            this.currencyOutput.amount = Number((this.currencyInput.amount * this.currencyOutput.exchangeRate).toFixed(4));  
-          } else {
-            this.printExchangeRateNotExist();
+      // set a key for valet api
+      this.currencyInput.seriesNames = "FX" + this.currencyInput.fromCurrency + this.currencyInput.toCurrency;
+      
+      if(this.currencyInput.seriesNames == "FXCADCAD") {       // handle exceptional case
+        // to make the same value not using 4 decimal places
+        this.currencyOutput.exchangeRate = 1;
+        this.currencyOutput.amount = this.currencyInput.amount;  
+      } else { // handle common case
+        this.currencyConverterService.getExchangeAmount(this.currencyInput)
+        .subscribe({
+          next: (exchangeInfo) => {
+            console.log(exchangeInfo);
+  
+            if(exchangeInfo.observations.length > 0) {
+              this.currencyOutput.exchangeRate = exchangeInfo.observations[0][this.currencyInput.seriesNames].v;
+              this.currencyOutput.amount = Number((this.currencyInput.amount * this.currencyOutput.exchangeRate).toFixed(4));  
+            } else {
+              this.printExchangeRateNotExist();
+            }
+           },
+          error: (response) => {
+            console.log(response);
+  
           }
-         },
-        error: (response) => {
-          console.log(response);
-        }
-      });
+        });
+      }
     }
   }
 
@@ -118,11 +127,12 @@ export class CurrencyConverterComponent implements OnInit {
   }
 
   printExchangeRateNotExist() {
+    // need to use environment value later
     this.errorMessage = "Exchange Rate for selected date not exist. Choose another date.";
   }
 
   printCurrencyNegativeInput() {
-    // to use environment value later
+    // need to use environment value later
     this.errorMessage = "Amount should be a positive number";
   }
 
