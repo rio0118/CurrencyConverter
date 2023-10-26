@@ -90,9 +90,10 @@ export class CurrencyConverterComponent implements OnInit {
     this.currencyInput.fromCurrency = this.currencyInput.toCurrency;
     this.currencyInput.toCurrency = tempCurrency;
 
-    const tempAmount: number = this.currencyInput.amount;
     this.currencyInput.amount = this.currencyOutput.amount;
-    this.currencyOutput.amount = tempAmount;
+
+    // call convert currency again. calculation is correct, but CAD->USD, USD->CAD are not same pairs
+    this.convertCurrency();
   }
 
   verifyCurrencyInput() {
