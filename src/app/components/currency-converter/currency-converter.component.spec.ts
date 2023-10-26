@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CurrencyConverterComponent } from './currency-converter.component';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
 describe('CurrencyConverterComponent', () => {
   let component: CurrencyConverterComponent;
@@ -8,7 +10,11 @@ describe('CurrencyConverterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CurrencyConverterComponent ]
+      declarations: [ CurrencyConverterComponent ],
+      imports: [
+        HttpClientModule,
+        FormsModule
+      ]
     })
     .compileComponents();
 
